@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "*") // This allows all origins
 public class UserController {
 
     @Autowired
@@ -72,6 +73,51 @@ public class UserController {
     @GetMapping("/{userId}/user-details")
     public ResponseEntity<UserDetailsDTO> getUserDetails(@PathVariable String userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
+        UserDetailsDTO userDetailsDTO = new UserDetailsDTO(
+                user.getEmail(),
+                user.getJobTitle(),
+                user.getUsername(),
+                user.getNumber(),
+                user.getAddress(),
+                user.getBio()
+        );
+
+        return ResponseEntity.ok(userDetailsDTO);
+    }
+
+    @GetMapping("/username/{username}/get-profile-picture")
+    public ResponseEntity<byte[]> getProfilePictureByUsername(@PathVariable String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
+        Binary profilePicture = user.getProfilePicture();
+        if (profilePicture == null || profilePicture.length() == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Set the content type based on the file type (you may need to adjust this based on your requirements)
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        // Convert the binary data to byte array
+        byte[] imageData = profilePicture.getData();
+
+        // Return the image data with appropriate headers
+        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/user-details/{username}")
+    public ResponseEntity<UserDetailsDTO> getUserDetailsByUsername(@PathVariable String username) {
+        Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

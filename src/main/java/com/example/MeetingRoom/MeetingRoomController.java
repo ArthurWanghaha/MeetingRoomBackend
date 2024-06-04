@@ -1,19 +1,19 @@
 package com.example.MeetingRoom;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/meeting-rooms")
+@CrossOrigin(origins = "*") // This allows all origins
 public class MeetingRoomController {
 
     @Autowired
@@ -62,6 +62,18 @@ public class MeetingRoomController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Handle invalid time format or other errors
         }
     }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<MeetingRoom> getMeetingRoomByName(@PathVariable("name") String name) {
+        Optional<MeetingRoom> meetingRoomData = meetingRoomRepository.findByName(name);
+
+        if (meetingRoomData.isPresent()) {
+            return new ResponseEntity<>(meetingRoomData.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     private boolean isMeetingRoomAvailable(
             MeetingRoom meetingRoom,

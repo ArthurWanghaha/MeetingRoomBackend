@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 //@RequestMapping("/api/v1/movies")
+@CrossOrigin(origins = "*") // This allows all origins
 public class DocumentController {
     @Autowired
     private DocumentService service;

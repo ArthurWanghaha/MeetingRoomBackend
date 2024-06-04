@@ -3,6 +3,7 @@ package com.example.MeetingRoom;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "bookings")
@@ -20,7 +21,18 @@ public class Booking {
     private String endingTime;   // Store as string in format HHmm
     private List<byte[]> uploadedFiles;
     private List<String> participants;
+
+    public List<String> getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(List<String> fileIds) {
+        this.fileIds = fileIds;
+    }
+
     private List<String> teams;
+
+    private List<String> fileIds = new ArrayList<>();
 
     // Constructors
 
